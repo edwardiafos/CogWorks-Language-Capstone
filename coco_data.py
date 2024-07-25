@@ -44,3 +44,6 @@ class COCODataManager:
 
     def get_caption_ids(self):
         return list(self.caption_id_to_caption.keys())
+    
+    def get_image_urls(self):
+        return [img["url"] for img in self.coco_data["coco_url"]]

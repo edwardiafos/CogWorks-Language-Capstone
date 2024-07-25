@@ -40,14 +40,24 @@ def initialize_coco_data():
     coco_data = COCODataManager(filename)
     return coco_data
 
+def create_image_database(image_ids, image_descriptors, model):
+    image_db = {}
+    for img_id in image_ids:
+        descriptor = image_descriptors.get(img_id)
+        if descriptor is not None:
+            embedding = None # TODO: After model is created, here, run the forward pass upon descriptor smth like model.forwardpass(descriptor)
+            
+            image_db[img_id] = embedding
+    return image_db
+
 def get_user_input():
     pass
 
 
 
 def se_text(text: str, captions: Sequence[str]) -> np.ndarray: # um someone who has taken more math than algebra II please check this lol
-    """Takes text and returns a shape (50,) array by using IDF and glove embeddings.
-        Returns a shape (N, 50) array with N being the number of tokens in `text.`
+    """Takes text and returns a shape (200,) array by using IDF and glove embeddings.
+        Returns a shape (N, 200) array with N being the number of tokens in `text.`
     """
     global glove 
     text_tokens = process_caption(text) # len N
@@ -66,12 +76,12 @@ def se_text(text: str, captions: Sequence[str]) -> np.ndarray: # um someone who 
     nt = np.array(nt, dtype=float)
     idf = np.log10(N / nt) # shape (N,)
 
-    glove_embeddings = np.array([glove[word] for word in text_tokens]) # shape (N, 50)
+    glove_embeddings = np.array([glove[word] for word in text_tokens]) # shape (N, 200)
     for i, weight in enumerate(idf):
         glove_embeddings[i] += weight
 
-    ret = glove_embeddings / np.linalg.norm(glove_embeddings) # shape (N, 50)
-    return ret.mean(axis=0) # should be shape (50,)? hopefully??
+    ret = glove_embeddings / np.linalg.norm(glove_embeddings) # shape (N, 200)
+    return ret.mean(axis=0) # should be shape (200,)? hopefully??
 
 
 
