@@ -1,0 +1,306 @@
+<!--Most of the functions in javascript are recycled from an old project so it might work a bit weirdly-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semantic Image Search</title>
+    <style>
+        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            z-index: 1;
+            position: relative;
+        }
+        h1, .team-name {
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        h1 {
+            font-size: 36px;
+        }
+        .team-name {
+            font-size: 20px;
+            color: var(--accent-color);
+        }
+        .theme-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 2;
+        }
+        .theme-switch button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--accent-color);
+        }
+        .search-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        input[type="text"] {
+            width: 60%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: var(--accent-color);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        button:hover {
+            background-color: var(--accent-hover-color);
+        }
+        .results {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .image-card {
+            width: 30%;
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            transition: transform 0.2s;
+        }
+        .image-card img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        .image-card:hover {
+            transform: scale(1.05);
+        }
+        .rank-button {
+            padding: 5px 10px;
+            font-size: 14px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .rank-button:hover {
+            background-color: #218838;
+        }
+        
+        body.light-mode {
+            --background-color: #f4f4f9;
+            --text-color: #333;
+            --accent-color: #28a745;
+            --accent-hover-color: #218838;
+        }
+        .light-mode {
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+        .light-mode input[type="text"] {
+            background-color: #fff;
+            color: #000;
+            border-color: #ddd;
+        }
+        .light-mode .image-card {
+            background-color: #fff;
+        }
+        .light-mode .theme-switch button {
+            color: var(--accent-color);
+        }
+        
+        body.dark-mode {
+            --background-color: #121212;
+            --text-color: #ffffff;
+            --accent-color: #4caf50;
+            --accent-hover-color: #388e3c;
+        }
+        .dark-mode {
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+        .dark-mode input[type="text"] {
+            background-color: #333;
+            color: #fff;
+            border-color: #444;
+        }
+        .dark-mode .image-card {
+            background-color: #1e1e1e;
+        }
+        .dark-mode .theme-switch button {
+            color: var(--accent-color);
+        }
+
+        
+        .blob {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, rgba(0, 255, 0, 0.3), rgba(255, 0, 150, 0.3));
+            pointer-events: none;
+            filter: blur(50px);
+            z-index: 0;
+            transform: translate(-50%, -50%);
+            animation: morph 6s infinite, rotate 2s linear infinite;
+        }
+
+        @keyframes morph {
+            0%, 100% {
+                border-radius: 50% 50% 50% 50%;
+            }
+            33% {
+                border-radius: 60% 40% 70% 30%;
+            }
+            66% {
+                border-radius: 40% 60% 30% 70%;
+            }
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        
+    </style>
+</head>
+<body class="dark-mode">
+    <div class="container">
+        <h1 data-value="Semantic Image Search">XXXXXXX</h1>
+        <div class="team-name" data-value="We Love Bytes">XXXXXXX</div>
+        <div class="theme-switch">
+            <button onclick="toggleTheme()"><i class="fas fa-adjust"></i></button>
+        </div>
+        <div class="search-container">
+            <input type="text" id="searchQuery" placeholder="Enter search terms...">
+            <button onclick="searchImages()">Search</button>
+            
+        </div>
+        <div class="results" id="resultsContainer">
+        </div>
+    </div>
+
+   
+
+    <div class="blob" id="blob"></div>
+    
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            if (body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+            } else {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+            }
+        }
+
+        function searchImages() {
+            const query = document.getElementById('searchQuery').value;
+            fetch(`/search?query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const resultsContainer = document.getElementById('resultsContainer');
+                    resultsContainer.innerHTML = '';
+                    data.images.forEach(image => {
+                        const card = document.createElement('div');
+                        card.className = 'image-card';
+                        card.innerHTML = `
+                            <img src="${image.url}" alt="Image">
+                            <button class="rank-button" onclick="rankImage('${image.id}')">Rank</button>
+                        `;
+                        resultsContainer.appendChild(card);
+                    });
+                });
+        }
+
+        
+
+        document.addEventListener('mousemove', (event) => {
+            const blob = document.getElementById('blob');
+            const mouseX = event.clientX;
+            const mouseY = event.clientY;
+            blob.style.left = `${mouseX}px`;
+            blob.style.top = `${mouseY}px`;
+            const distance = Math.sqrt(Math.pow(mouseX - blob.offsetLeft - blob.offsetWidth / 2, 2) + Math.pow(mouseY - blob.offsetTop - blob.offsetHeight / 2, 2));
+            const scale = Math.min(2, Math.max(1, distance / 200));
+            blob.style.transform = `translate(-50%, -50%) scale(${scale}) rotate(${(Date.now() / 20) % 360}deg)`;
+        });
+
+        
+
+        document.addEventListener('mousemove', (event) => {
+            const blob = document.getElementById('blob');
+            const mouseX = event.clientX;
+            const mouseY = event.clientY;
+            
+            const blobSize = blob.offsetWidth / 2;
+            blob.style.left = `${mouseX - blobSize}px`;
+            blob.style.top = `${mouseY - blobSize}px`;
+        });
+
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        let interval = null;
+
+        function applyHackerEffect(element) {
+            element.onmouseover = event => {  
+                let iteration = 0;
+
+                clearInterval(interval);
+
+                interval = setInterval(() => {
+                    event.target.innerText = event.target.innerText
+                        .split("")
+                        .map((letter, index) => {
+                            if(index < iteration) {
+                                return event.target.dataset.value[index];
+                            }
+
+                            return letters[Math.floor(Math.random() * 26)];
+                        })
+                        .join("");
+
+                    if(iteration >= event.target.dataset.value.length){ 
+                        clearInterval(interval);
+                    }
+
+                    iteration += 1 / 3;
+                }, 30);
+            };
+
+            const randomText = Array.from({length: element.dataset.value.length}, () => letters[Math.floor(Math.random() * 26)]).join("");
+            element.innerText = randomText;
+        }
+
+        applyHackerEffect(document.querySelector("h1"));
+        applyHackerEffect(document.querySelector(".team-name"));
+    </script>
+</body>
+</html>
