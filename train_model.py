@@ -2,7 +2,7 @@ import numpy as np
 from mynn.optimizers.sgd import SGD
 import mygrad.nnet
 
-from ___ import Image2Caption # Model
+from image2caption import Image2Caption # Model
 
 def cos_sim(x, y):
     out = np.dot(x, y) / (np.linalg.norm(x) * np.linalg.norm(y))
