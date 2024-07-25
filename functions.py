@@ -85,7 +85,3 @@ def se_text(text: str, captions: Sequence[str]) -> np.ndarray: # um someone who 
 
 
 
-def se_image(): # this is Image2Caption we need to create/train
-    pass
-
-
