@@ -19,7 +19,8 @@ class Image2Caption:
         self.d = d
         self.dense = dense(input_size=512, output_size=d, weight_initializer=he_normal, bias=True)
 
-    def __call__(self, x):
+    def __call__(self, x: np.ndarray):
+        """x should be a (N, 512) array"""
         return self.dense(x)
     
     @property
