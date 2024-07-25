@@ -7,10 +7,13 @@ from typing import List, Union, Sequence
 from collections import Counter
 from pathlib import Path
 import os
-
+from cogworks_data.language import get_data_path
+from pathlib import Path
+import json
 from tokenizer import process_caption
 
 from gensim.models import KeyedVectors
+from coco_data import COCODataManager
 
 filename = "glove.6B.200d.txt.w2v"
 ### this takes a while to load -- keep this in mind when designing your capstone project ###
@@ -22,6 +25,20 @@ with Path(get_data_path('resnet18_features.pkl')).open('rb') as f:
     resnet18_features = pickle.load(f)
 
 
+def initialize_coco_data():
+    """
+    coco_data can be used using the following:
+    
+    coco_data = initialize_coco_data()
+    image_ids = coco_data.get_image_ids()
+    captions = coco_data.get_caption_ids()
+    image_to_captions = coco_data.image_to_caption()
+    caption_id_to_images = coco_data.caption_id_to_image()
+    caption_id_to_captions = coco_data.caption_id_to_caption()
+    """
+    filename = get_data_path("captions_train2014.json")
+    coco_data = COCODataManager(filename)
+    return coco_data
 
 def get_user_input():
     pass
