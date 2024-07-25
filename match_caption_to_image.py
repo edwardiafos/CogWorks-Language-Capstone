@@ -5,7 +5,7 @@ def match_caption_to_image(semantic_embedding_caption, semantic_embedding_images
     all embedded images (N,200) ?
     returns k most similar images
     """
-    res = np.dot(semantic_embedding_caption, semantic_embedding_images) # (N,200)
+    res = np.dot(semantic_embedding_caption, semantic_embedding_images) # (N,)
     res_sorted = np.argsort(res, axis=0)
     top_image_embeddings = semantic_embedding_images[:k]
 
