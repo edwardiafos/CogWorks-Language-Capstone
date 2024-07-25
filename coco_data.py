@@ -13,9 +13,9 @@ class COCODataManager:
         with open(captions_file, 'r') as f:
             self.coco_data = json.load(f)
             
-        self.image_id_to_captions = self.image_to_caption()
-        self.caption_id_to_images = self.caption_id_to_image()
-        self.caption_id_to_captions = self.caption_id_to_caption()
+        self.image_id_to_captions = self.image_to_caption() # returns dict of image ids mapped to its associated caption ids
+        self.caption_id_to_images = self.caption_id_to_image() # returns dict of caption ids mapped to image ids
+        self.caption_id_to_captions = self.caption_id_to_caption() # returns dict of caption ids mapped to text captions
 
     def image_to_caption(self):
         dict = {}
