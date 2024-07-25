@@ -40,6 +40,16 @@ def initialize_coco_data():
     coco_data = COCODataManager(filename)
     return coco_data
 
+def create_image_database(image_ids, image_descriptors, model):
+    image_db = {}
+    for img_id in image_ids:
+        descriptor = image_descriptors.get(img_id)
+        if descriptor is not None:
+            embedding = None # TODO: After model is created, here, run the forward pass upon descriptor smth like model.forwardpass(descriptor)
+            
+            image_db[img_id] = embedding
+    return image_db
+
 def get_user_input():
     pass
 
