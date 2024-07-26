@@ -40,6 +40,9 @@ def initialize_coco_data():
     coco_data = COCODataManager(filename)
     return coco_data
 
+### COCO DATABASE ###
+coco_data = initialize_coco_data()
+
 def create_image_database(image_ids, image_descriptors, model):
     image_db = {}
     for img_id in image_ids:
@@ -50,6 +53,8 @@ def create_image_database(image_ids, image_descriptors, model):
             image_db[img_id] = embedding
     return image_db
 
+
+
 def get_user_input():
     pass
 
@@ -57,7 +62,6 @@ def get_user_input():
 
 def se_text(text: str, captions: Sequence[str]) -> np.ndarray: # um someone who has taken more math than algebra II please check this lol
     """Takes text and returns a shape (200,) array by using IDF and glove embeddings.
-        Returns a shape (N, 200) array with N being the number of tokens in `text.`
     """
     global glove 
     text_tokens = process_caption(text) # len N
@@ -84,4 +88,18 @@ def se_text(text: str, captions: Sequence[str]) -> np.ndarray: # um someone who 
     return ret.mean(axis=0) # should be shape (200,)? hopefully??
 
 
-coco_data = initialize_coco_data()
+
+def match_caption_to_image(semantic_embedding_caption, semantic_embedding_images, k=4):
+    """
+    caption embedding (200,)
+    all embedded images (N, 200) 
+    returns k most similar image urls
+    """
+    global coco_data
+    res = np.dot(semantic_embedding_caption, semantic_embedding_images) # res = shape (N,) array
+    res_sorted = np.sort(res) # higher dot product, more similarity
+    top_image_embeddings = res_sorted[:k] # shape (k,)
+
+    top_k_image_ids = [coco_data.se_image_to_image_id[se_image] for se_image in top_image_embeddings] #get using the image using database given top 4 semantic embeddings
+    top_k_image_urls = [coco_data.image_id_to_urls[image_id] for image_id in top_k_image_ids]
+    return top_k_image_urls
