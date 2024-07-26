@@ -61,6 +61,21 @@ Once the new environment is activated, install MyGrad, MyNN, Noggin, and Gensim,
 ```
 pip install mygrad mynn noggin gensim cogworks-data
 ```
+Navigate back to your original parent folder and clone this repository.
+```
+git clone https://github.com/edwardiafos/CogWorks-Language-Capstone.git
+```
+Navigate to our folder.
+```
+cd CogWorks-Vision-Module-Capstone
+```
+Install all dependencies.
+```
+pip install -r requirements.txt
+```
+And run main.py to start the program.
+
+python main.py
 
 
 
