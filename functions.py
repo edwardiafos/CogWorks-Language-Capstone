@@ -84,11 +84,23 @@ def make_training_tuples():
 
     training_descriptor_vectors = np.asarray(itemgetter(*training_ids)(resnet18_features))
 
-    coco_data = initialize_coco_data()
-    caption_ids = list(itemgetter(*training_ids)(coco_data.image_id_to_captions)) # dict one id to one id, will this always access the same ones or no
+    #coco_data = initialize_coco_data()
+    
+    print(type(itemgetter(*training_ids)(coco_data.image_id_to_captions)), type(itemgetter(*training_ids)(coco_data.image_id_to_captions)[0]))
+    caption_ids = np.asarray(itemgetter(*training_ids)(coco_data.image_id_to_captions), dtype = object)[:, 0]
 
-    print(type(caption_ids), type(coco_data.caption_id_to_captions))
-    print(type(itemgetter(*caption_ids)(coco_data.caption_id_to_captions)))
+    print(caption_ids.shape, caption_ids[:, 0].shape)
+
+    cap_slice = caption_ids[:, 0]
+
+    print(cap_slice)
+    print(type(training_ids), type(caption_ids), type(coco_data.caption_id_to_captions))
+    print(caption_ids.shape, caption_ids[:, 0].shape)
+    print("wait")
+    print(caption_ids[0][0])
+    print("wait")
+    print(len(caption_ids), len(caption_ids[0]))
+    print(itemgetter(*caption_ids)(coco_data.caption_id_to_captions))
     text_captions = np.asarray(itemgetter(*caption_ids)(coco_data.caption_id_to_captions))
     caption_to_embeddings = {caption : se_text(caption, text_captions) for caption in text_captions}
 
