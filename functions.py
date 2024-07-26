@@ -175,8 +175,8 @@ def match_caption_to_image(semantic_embedding_caption, semantic_embedding_images
     """
     global coco_data
     res = np.dot(semantic_embedding_caption, semantic_embedding_images) # res = shape (N,) array
-    res_sorted = np.sort(res) # higher dot product, more similarity
-    top_image_embeddings = res_sorted[:k] # shape (k,)
+    res_sorted = np.argsort(res)[:k] # higher dot product, more similarity -- sorts indices
+    top_image_embeddings = [semantic_embedding_images[i] for i in res_sorted] # shape (k,) -- gets top images based on sorted indices
 
     top_k_image_ids = [coco_data.se_image_to_image_id[se_image] for se_image in top_image_embeddings] #get using the image using database given top 4 semantic embeddings
     top_k_image_urls = [coco_data.image_id_to_urls[image_id] for image_id in top_k_image_ids]
