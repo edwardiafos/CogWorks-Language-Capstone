@@ -1,6 +1,7 @@
 import numpy as np
 from mynn.optimizers.sgd import SGD
 import mygrad.nnet
+from functions import *
 
 from image2caption import Image2Caption # Model
 
@@ -24,7 +25,7 @@ def train_model(train_image_descriptors, good_image_embeddings, bad_image_embedd
     margin = 0.1
 
     batch_size = 32
-
+    acc = 0
     for epoch_cnt in range(180): # revise epoch count
         idxs = np.arange(len(train_image_descriptors)) # train_image_IDs is all the image IDs set aside for training data
         np.random.shuffle(idxs)  
@@ -48,6 +49,9 @@ def train_model(train_image_descriptors, good_image_embeddings, bad_image_embedd
             loss.backward()
             optim.step()
 
-            acc = accuracy(outputs, good_image_embeddings)
+            if loss.item() == 0:
+                acc += 1
 
-    return acc
+    return acc / len(train_image_descriptors)
+
+train_model(make_training_tuples())

@@ -16,7 +16,6 @@ def process_caption(caption, remove_stops=False):
     caption = caption.lower()
 
     words = caption.split()
-    words = [w for w in words if w in string.ascii_lowercase]
     
     if remove_stops:
         words = [w for w in words if w not in stops]

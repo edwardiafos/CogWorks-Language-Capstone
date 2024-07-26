@@ -71,12 +71,13 @@ def make_training_tuples():
 
     print(len(resnet18_features)) # 82612
 
-    idxs = np.arange(len(resnet18_features))
+    idxs = np.arange(100)
     np.random.shuffle(idxs)
 
     print(len(idxs))
 
-    training_idxs = idxs[0:len(resnet18_features)*3//4] # for even splitting purposes, 3/4 train, 1/4 test
+    training_idxs = idxs[0:100*3//4] # for even splitting purposes, 3/4 train, 1/4 test
+    
     training_ids = [list(resnet18_features.keys())[key_idx] for key_idx in training_idxs]
     # ^ do the whole list(keys) thing bc dicts don't have indexes to access xyz elements,
     # so may need to make that a global variable to make sure the training/test don't 
@@ -86,21 +87,23 @@ def make_training_tuples():
 
     #coco_data = initialize_coco_data()
     
-    print(type(itemgetter(*training_ids)(coco_data.image_id_to_captions)), type(itemgetter(*training_ids)(coco_data.image_id_to_captions)[0]))
+    # print(type(itemgetter(*training_ids)(coco_data.image_id_to_captions)), type(itemgetter(*training_ids)(coco_data.image_id_to_captions)[0]))
     caption_ids = np.asarray(itemgetter(*training_ids)(coco_data.image_id_to_captions), dtype = object)[:, 0]
+
 
     print(caption_ids.shape, caption_ids[:, 0].shape)
 
     cap_slice = caption_ids[:, 0]
 
-    print(cap_slice)
+    """print(cap_slice)
     print(type(training_ids), type(caption_ids), type(coco_data.caption_id_to_captions))
     print(caption_ids.shape, caption_ids[:, 0].shape)
     print("wait")
     print(caption_ids[0][0])
     print("wait")
     print(len(caption_ids), len(caption_ids[0]))
-    print(itemgetter(*caption_ids)(coco_data.caption_id_to_captions))
+    print(itemgetter(*caption_ids)(coco_data.caption_id_to_captions))"""
+
     text_captions = np.asarray(itemgetter(*caption_ids)(coco_data.caption_id_to_captions))
     caption_to_embeddings = {caption : se_text(caption, text_captions) for caption in text_captions}
 
@@ -161,7 +164,7 @@ def se_text(text: str, captions: Sequence[str]) -> np.ndarray: # um someone who 
     counters.append(Counter(text_tokens))
 
     N = len(counters)
-    nt = [sum(1 if t in counter else 0 for counter in counters) for t in text_tokens]
+    nt = [sum(1 if t in counter else 0 for counter in counters) for t in total_tokens]
     nt = np.array(nt, dtype=float)
     idf = np.log10(N / nt) # shape (N,)
 
