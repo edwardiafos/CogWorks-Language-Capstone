@@ -84,4 +84,4 @@ def se_text(text: str, captions: Sequence[str]) -> np.ndarray: # um someone who 
     return ret.mean(axis=0) # should be shape (200,)? hopefully??
 
 
-
+coco_data = initialize_coco_data()
