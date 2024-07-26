@@ -74,8 +74,25 @@ Install all dependencies.
 pip install -r requirements.txt
 ```
 And run main.py to start the program.
-
+```
 python main.py
+```
+## Usage
+![image](https://github.com/user-attachments/assets/172b54cd-6cd6-4fe3-b6aa-ddf12db7116b)
+![image](https://github.com/user-attachments/assets/02110737-415f-45f1-bf0f-2de16d195e7f)
 
+
+
+> Note: It is important to use this technology with ethics and consideration in mind. Privacy is a right.
+
+## Configuration
+We already optimized the configuration of this program. 
+
+## Contributors
+- Zoe Granadoz
+- Edwardia Fosah
+- Bryan Wang
+- Ye Yint Hmine
+- Manya Tandon
 
 
