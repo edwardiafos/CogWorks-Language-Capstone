@@ -1,0 +1,8 @@
+flask
+numpy
+mygrad
+mynn
+torch
+torchvision
+gensim
+cogworks-data
