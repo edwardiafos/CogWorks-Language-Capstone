@@ -17,7 +17,7 @@ class Image2Caption:
             with the input being (N, 512), the output of our model is shape (N, d)
         """
         self.d = d
-        self.dense = dense(input_size=512, output_size=d, weight_initializer=glot_normal, bias=True)
+        self.dense = dense(input_size=512, output_size=d, weight_initializer=glorot_normal, bias=True)
 
     def __call__(self, x: np.ndarray):
         """x should be a (N, 512) array"""
