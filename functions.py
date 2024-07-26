@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import json
 from tokenizer import process_caption
+from resnet_loading import resnet18_features
 
 from gensim.models import KeyedVectors
 from coco_data import COCODataManager
@@ -22,9 +23,9 @@ filename = "glove.6B.200d.txt.w2v"
 glove = KeyedVectors.load_word2vec_format(get_data_path(filename), binary=False)
 
 ### Load saved image descriptor vectors ###
-resnet18_features = {}
+'''resnet18_features = {}
 with Path(get_data_path('resnet18_features.pkl')).open('rb') as f:
-    resnet18_features = pickle.load(f)
+    resnet18_features = pickle.load(f)'''
 
 
 def initialize_coco_data():
@@ -84,16 +85,17 @@ def make_training_tuples():
     training_descriptor_vectors = np.asarray(itemgetter(*training_ids)(resnet18_features))
 
     coco_data = initialize_coco_data()
-    image_id_to_caption_id = coco_data.image_id_to_captions
-    caption_id_to_caption = coco_data.caption_id_to_captions
-    caption_to_embeddings = {caption_embedder(captions) for captions in __}
+    caption_ids = list(itemgetter(*training_ids)(coco_data.image_id_to_captions)) # dict one id to one id, will this always access the same ones or no
 
-    # ^ above code is still incomplete, just wanted to commit now.
+    print(type(caption_ids), type(coco_data.caption_id_to_captions))
+    print(type(itemgetter(*caption_ids)(coco_data.caption_id_to_captions)))
+    text_captions = np.asarray(itemgetter(*caption_ids)(coco_data.caption_id_to_captions))
+    caption_to_embeddings = {caption : se_text(caption, text_captions) for caption in text_captions}
 
-    good_image_embeddings = np.asarray(itemgetter(*training_ids)(coco_data.image_to_caption()))
+    good_image_embeddings = np.asarray(itemgetter(*text_captions)(caption_to_embeddings))
 
-    np.random.shuffle(training_idxs) # so that we dont cut into testing data
-    bad_image_embeddings = np.asarray(itemgetter(*training_ids)(coco_data.image_to_caption())) # now train idxs is idxs for bad img embeddings
+    np.random.shuffle(text_captions) # so that we dont cut into testing data
+    bad_image_embeddings = np.asarray(itemgetter(*text_captions)(caption_to_embeddings)) # now train idxs is idxs for bad img embeddings
 
     return training_descriptor_vectors, good_image_embeddings, bad_image_embeddings
 
@@ -106,7 +108,7 @@ def do_training():
 
     print(accuracy)
 
-# do_training()
+do_training()
 
 
 def caption_embedder(captions):

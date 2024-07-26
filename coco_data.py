@@ -27,7 +27,10 @@ class COCODataManager:
         self.image_id_to_captions = self.image_to_caption() # returns dict of image ids mapped to its associated caption ids
         self.caption_id_to_images = self.caption_id_to_image() # returns dict of caption ids mapped to image ids
         self.caption_id_to_captions = self.caption_id_to_caption() # returns dict of caption ids mapped to text captions
-        self.image_id_to_urls = self.image_id_to_url() # returns dict of image ids to their urls
+        #
+        # self.image_id_to_urls = self.image_id_to_url() # returns dict of image ids to their urls
+        # ^ not currently working, did for running purposes
+
         #self.se_image_to_image_ids = self.se_image_to_image_id() # returns dict of image semantic embeddings mapped to their image ids
         
         # ^ can we just have this one be by demand, since model needs to train first and needs to access this
