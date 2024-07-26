@@ -7,7 +7,6 @@ from typing import List, Union, Sequence
 from collections import Counter
 from pathlib import Path
 import os
-from cogworks_data.language import get_data_path
 from pathlib import Path
 import json
 from tokenizer import process_caption
