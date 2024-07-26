@@ -151,7 +151,14 @@ def se_text(text: str, captions: Sequence[str]) -> np.ndarray: # um someone who 
     nt = np.array(nt, dtype=float)
     idf = np.log10(N / nt) # shape (N,)
 
-    glove_embeddings = np.array([glove[word] for word in text_tokens]) # shape (N, 200)
+    glove_embeddings = []
+    for word in text_tokens:
+        if word in glove:
+            glove_embeddings.append(glove[word]) # append glove embedding if glove contains word, shape (200,)
+        else:
+            glove_embeddings.append(np.zeros(shape=(200,))) # else append array of zeros shape (200,)
+
+    glove_embeddings = np.array(glove_embeddings) # shape (N, 200)
     for i, weight in enumerate(idf):
         glove_embeddings[i] += weight
 
