@@ -1,6 +1,7 @@
 import string
 from pathlib import Path
 import json
+from cogworks_data.language import get_data_path
 
 with open(get_data_path("stopwords.txt"), 'r') as r:
     stops = []
@@ -15,7 +16,7 @@ def process_caption(caption, remove_stops=False):
     caption = caption.lower()
 
     words = caption.split()
-    words = [w for w in word if w in string.ascii_lowercase]
+    words = [w for w in words if w in string.ascii_lowercase]
     
     if remove_stops:
         words = [w for w in words if w not in stops]
