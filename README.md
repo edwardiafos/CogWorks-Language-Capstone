@@ -79,7 +79,8 @@ python main.py
 ```
 ## Usage
 ![image](https://github.com/user-attachments/assets/172b54cd-6cd6-4fe3-b6aa-ddf12db7116b)
-![image](https://github.com/user-attachments/assets/02110737-415f-45f1-bf0f-2de16d195e7f)
+![image](https://github.com/user-attachments/assets/aab13d93-014d-4045-aeb8-eb0cd8d70cad)
+
 
 
 
