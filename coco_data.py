@@ -4,7 +4,7 @@ from cogworks_data.language import get_data_path
 import pickle
 import numpy as np
 
-from ___ import image2caption_model # import the trained model from somewhere
+from image2caption import Image2Caption # import the trained model from somewhere
 
 ### Load saved image descriptor vectors ###
 resnet18_features = {}
@@ -27,8 +27,11 @@ class COCODataManager:
         self.image_id_to_captions = self.image_to_caption() # returns dict of image ids mapped to its associated caption ids
         self.caption_id_to_images = self.caption_id_to_image() # returns dict of caption ids mapped to image ids
         self.caption_id_to_captions = self.caption_id_to_caption() # returns dict of caption ids mapped to text captions
-        self.se_image_to_image_ids = self.se_image_to_image_id() # returns dict of image semantic embeddings mapped to their image ids
         self.image_id_to_urls = self.image_id_to_url() # returns dict of image ids to their urls
+        #self.se_image_to_image_ids = self.se_image_to_image_id() # returns dict of image semantic embeddings mapped to their image ids
+        
+        # ^ can we just have this one be by demand, since model needs to train first and needs to access this
+        # and so can't initialize this var yet 
         
     def image_to_caption(self):
         dict = {}
@@ -64,8 +67,8 @@ class COCODataManager:
     def se_image_to_image_id(self):
         ret = {}
         for image_id, descriptor_vector in resnet18_features.items():
-            # image2caption_model takes in an input shape (N, 512) and output should be a shape (N, 200)
-            ret[image2caption_model(descriptor_vector[np.newaxis, :])[0]] = image_id   # this line makes it so that the keys of the dict are shape (200,) !! keep this in mind
+            # image2caption_model takes in an input shape (N, 512) and output should be a shape (N, 50)
+            ret[Image2Caption(descriptor_vector[np.newaxis, :])[0]] = image_id   # this line makes it so that the keys of the dict are shape (50,) !! keep this in mind
 
         return ret
     

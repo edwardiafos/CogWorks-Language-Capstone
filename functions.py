@@ -13,6 +13,9 @@ from tokenizer import process_caption
 
 from gensim.models import KeyedVectors
 from coco_data import COCODataManager
+from operator import itemgetter
+
+from train_model import train_model
 
 filename = "glove.6B.200d.txt.w2v"
 ### this takes a while to load -- keep this in mind when designing your capstone project ###
@@ -42,6 +45,9 @@ def initialize_coco_data():
 ### COCO DATABASE ###
 coco_data = initialize_coco_data()
 
+
+# poss need to modify to use resnet18 OR is that the step before when figuring out
+# what image_descriptors get passed in?
 def create_image_database(image_ids, image_descriptors, model):
     image_db = {}
     for img_id in image_ids:
@@ -57,7 +63,73 @@ def create_image_database(image_ids, image_descriptors, model):
 def get_user_input():
     pass
 
+def make_training_tuples():
+    # training tuples should have:
+    # (img_descriptor, semantic embedding of descriptor's caption, semantic embedding of diff img caption)
+    # image ids come from resnet
 
+    print(len(resnet18_features)) # 82612
+
+    idxs = np.arange(len(resnet18_features))
+    np.random.shuffle(idxs)
+
+    print(len(idxs))
+
+    training_idxs = idxs[0:len(resnet18_features)*3//4] # for even splitting purposes, 3/4 train, 1/4 test
+    training_ids = [list(resnet18_features.keys())[key_idx] for key_idx in training_idxs]
+    # ^ do the whole list(keys) thing bc dicts don't have indexes to access xyz elements,
+    # so may need to make that a global variable to make sure the training/test don't 
+    # overlap
+
+    training_descriptor_vectors = np.asarray(itemgetter(*training_ids)(resnet18_features))
+
+    coco_data = initialize_coco_data()
+    image_id_to_caption_id = coco_data.image_id_to_captions
+    caption_id_to_caption = coco_data.caption_id_to_captions
+    caption_to_embeddings = {caption_embedder(captions) for captions in __}
+
+    # ^ above code is still incomplete, just wanted to commit now.
+
+    good_image_embeddings = np.asarray(itemgetter(*training_ids)(coco_data.image_to_caption()))
+
+    np.random.shuffle(training_idxs) # so that we dont cut into testing data
+    bad_image_embeddings = np.asarray(itemgetter(*training_ids)(coco_data.image_to_caption())) # now train idxs is idxs for bad img embeddings
+
+    return training_descriptor_vectors, good_image_embeddings, bad_image_embeddings
+
+
+def do_training():
+
+    training_descriptor_vectors, good_image_embeddings, bad_image_embeddings = make_training_tuples()
+
+    accuracy = train_model(training_descriptor_vectors, good_image_embeddings, bad_image_embeddings)
+
+    print(accuracy)
+
+# do_training()
+
+
+def caption_embedder(captions):
+    global glove 
+    caption_tokens = [process_caption(cap) for cap in captions]
+
+    vocab = set(caption_tokens)
+    counters = []
+    for caption_token in caption_tokens:
+        counters.append(Counter(caption_token))
+
+    N = len(counters)
+    nt = [sum(1 if t in counter else 0 for counter in counters) for t in caption_tokens]
+    nt = np.array(nt, dtype=float)
+    idf = np.log10(N / nt) # shape (N,)
+
+    glove_embeddings = np.array([glove[word] for word in caption_tokens]) # shape (N, 200)
+    for i, weight in enumerate(idf):
+        glove_embeddings[i] += weight
+
+    ret = glove_embeddings / np.linalg.norm(glove_embeddings) # shape (N, 200)
+    return ret.mean(axis=0) # should be shape (200,)? hopefully??
+   
 
 def se_text(text: str, captions: Sequence[str]) -> np.ndarray: # um someone who has taken more math than algebra II please check this lol
     """Takes text and returns a shape (200,) array by using IDF and glove embeddings.

@@ -31,12 +31,17 @@ def train_model(train_image_descriptors, good_image_embeddings, bad_image_embedd
         
         for batch_cnt in range(0, len(train_image_descriptors) // batch_size):
             batch_indices = idxs[(batch_cnt * batch_size):((batch_cnt + 1) * batch_size)]
+
+            print("idxs", len(idxs), idxs.dtype)
+            print("loop", batch_cnt, batch_size, len(train_image_descriptors) // batch_size)
+            print("batch indices", len(batch_indices), batch_indices.dtype)
+
             batch = train_image_descriptors[batch_indices]
             
-            outputs = model(batch)
+            outputs = model(batch) # does this work
 
-            sim_to_good = cos_sim(outputs, good_image_embeddings)
-            sim_to_bad = cos_sim(outputs, bad_image_embeddings)
+            sim_to_good = cos_sim(outputs.data, good_image_embeddings)
+            sim_to_bad = cos_sim(outputs.data, bad_image_embeddings)
 
             loss = mygrad.nnet.margin_ranking_loss(sim_to_good, sim_to_bad, 1, margin)
 
