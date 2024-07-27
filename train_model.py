@@ -1,13 +1,23 @@
 import numpy as np
 from mynn.optimizers.sgd import SGD
 import mygrad.nnet
-from functions import *
 
 from image2caption import Image2Caption # Model
 
+
 def cos_sim(x, y):
-    out = np.dot(x, y) / (np.linalg.norm(x) * np.linalg.norm(y))
-    return out
+    if x.ndim == 3:
+        x = x.reshape(x.shape[0], -1)
+    
+    if y.ndim == 2:
+        norm_x = np.linalg.norm(x, axis=1, keepdims=True)
+        norm_y = np.linalg.norm(y, axis=1, keepdims=True)
+        
+        dot_product = np.dot(x, y.T)  # Shape (N, M)
+        similarity = dot_product / (norm_x * norm_y.T + 1e-10)  # Avoid division by zero
+        
+        return similarity
+
 
 def accuracy(predictions, truth): # i just reused the old one, and i think it should be fine, except maybe the == in line 14?
     predicted_labels = np.argmax(predictions, axis = 1)
@@ -44,14 +54,14 @@ def train_model(train_image_descriptors, good_image_embeddings, bad_image_embedd
             sim_to_good = cos_sim(outputs.data, good_image_embeddings)
             sim_to_bad = cos_sim(outputs.data, bad_image_embeddings)
 
+            y = np.ones_like(sim_to_good)
             loss = mygrad.nnet.margin_ranking_loss(sim_to_good, sim_to_bad, 1, margin)
 
             loss.backward()
             optim.step()
-
-            if loss.item() == 0:
-                acc += 1
+            print(loss.item())
+            
+            acc += loss.item()
 
     return acc / len(train_image_descriptors)
 
-train_model(make_training_tuples())
