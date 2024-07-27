@@ -53,10 +53,10 @@ class COCODataManager:
         return dict
 
     def caption_id_to_caption(self):
-        dict = {}
+        captions_dict = {}
         for annotation in self.coco_data["annotations"]:
-            dict[annotation["id"]] = annotation["caption"]
-        return dict
+            captions_dict[annotation["id"]] = annotation["caption"]
+        return captions_dict
 
     def get_image_ids(self):
         return [img["id"] for img in self.coco_data["images"]]
