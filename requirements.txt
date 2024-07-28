@@ -6,4 +6,3 @@ torch
 torchvision
 gensim
 cogworks-data
-torch
