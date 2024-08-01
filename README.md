@@ -16,7 +16,7 @@
 For the week 3 Capstone Project for BWSI, we made a text-to-image generator where given a prompt/caption, the user would be returned an image of what they had inputted. 
 Our model makes use of the [COCO (Common Objects in Context) dataset](https://cocodataset.org/#home) to receive both captions and images to train our Natural Language Processing Model. 
 <br/>
-*Note: This project was created as part of BWSI CogWorks Week2 Vision Capstone project.*
+*Note: This project was created as part of BWSI CogWorks Week 3 Language Capstone project.*
 *Presented by Team We Love Bytes 2024.*
 <br/>
 <br/>
